@@ -72,14 +72,12 @@ export function PreviewPanel({ convertedIcons, isConverting, progress, error, ic
                 <p>{error}</p>
               </div>
           </div>
-                    </div>
+          </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </motion.div>
+        </motion.div>
   );
 }
 
