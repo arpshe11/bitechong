@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { useIcoConverter } from './hooks/useIcoConverter';
 import type { ImageFile } from './types';
 
@@ -9,6 +10,11 @@ import { PreviewPanel } from './components/Preview/PreviewPanel';
 
 function App() {
   const [currentImage, setCurrentImage] = useState<ImageFile | null>(null);
+  const [isOpen1, setIsOpen1] = useState(false);
+  const [isOpen2, setIsOpen2] = useState(false);
+  const [isOpen3, setIsOpen3] = useState(false);
+  const [isOpen4, setIsOpen4] = useState(false);
+  const [isOpen5, setIsOpen5] = useState(false);
   const {
     isConverting,
     progress,
@@ -19,7 +25,6 @@ function App() {
     generateICO,
     updateSettings,
     toggleSize,
-    reset,
     cleanup
   } = useIcoConverter();
 
@@ -44,13 +49,7 @@ function App() {
     }
   }, [currentImage, settings, generateICO]);
 
-  const handleReset = useCallback(() => {
-    reset();
-    if (currentImage) {
-      URL.revokeObjectURL(currentImage.url);
-      setCurrentImage(null);
-    }
-  }, [currentImage, reset]);
+
 
   // 清理函数
   React.useEffect(() => {
@@ -62,7 +61,7 @@ function App() {
     };
   }, [cleanup, currentImage]);
 
-  const hasValidSizes = settings.sizes.length > 0;
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -92,13 +91,71 @@ function App() {
       </header>
 
       {/* 主内容 */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          {/* 左列：上传 + 配置 */}
-          <div className="xl:col-span-1 space-y-4">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+        {/* 上方：左侧上传，右侧配置 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+          {/* 左侧：上传面板 */}
+          <div className="space-y-6">
             <UploadPanel onImageUpload={handleImageUpload} />
             
-            {/* 配置选项 */}
+            {/* 安装说明 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-xl shadow-sm border border-gray-200 p-3"
+            >
+              <div className="mb-2">
+                <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                  <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  安装指南
+                </h3>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xs font-semibold">
+                    1
+                  </div>
+                  <span className="text-gray-700">当成功生成<span className="font-bold text-blue-600">favicon.ico</span>图像文件后,可在预览结果中下载您想要的尺寸</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xs font-semibold">
+                    2
+                  </div>
+                  <span className="text-gray-700">将下载的<span className="font-bold text-blue-600">favicon.ico</span>图像放在根目录下(也可放在其他目录)</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xs font-semibold">
+                    3
+                  </div>
+                  <span className="text-gray-700">在您页面源文件的&lt;head&gt;&lt;/head&gt;标签之间插入如下代码即可</span>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                  <code className="text-xs text-blue-600 font-mono">
+                    &lt;link rel="shortcut icon" href="/favicon.ico" /&gt;
+                  </code>
+                </div>
+
+                <div className="flex items-center gap-2 text-green-600">
+                  <div className="w-4 h-4 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                    <svg className="w-2 h-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="font-medium">完成！刷新浏览器查看效果</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* 右侧：配置选项 */}
+          <div className="h-full">
             <SizePanel
               settings={settings}
               onSettingsChange={updateSettings}
@@ -108,21 +165,132 @@ function App() {
               isConverting={isConverting}
             />
           </div>
+        </div>
 
-          {/* 右列：预览和下载 */}
-          <div className="xl:col-span-1">
-            {/* 预览面板 - 集成下载功能 */}
-            <div className="sticky top-4">
-              <PreviewPanel
-                convertedIcons={convertedIcons}
-                isConverting={isConverting}
-                progress={progress}
-                error={error}
-                icoFile={icoFile}
-              />
+        {/* 下方：预览结果 */}
+        <div>
+          <PreviewPanel
+            convertedIcons={convertedIcons}
+            isConverting={isConverting}
+            progress={progress}
+            error={error}
+            icoFile={icoFile}
+          />
+        </div>
+
+        {/* FAQ部分 - 手风琴样式 + 彩色节点 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-white rounded-xl shadow-sm border border-gray-200 p-4"
+        >
+          <div className="mb-4">
+            <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+              <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              常见问题
+            </h3>
+          </div>
+
+          <div className="space-y-2">
+            {/* FAQ 1 */}
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <button
+                className="w-full px-4 py-3 bg-white hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
+                onClick={() => setIsOpen1(!isOpen1)}
+              >
+                <div className="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-sm flex-shrink-0"></div>
+                <span className="text-sm font-medium text-gray-900 flex-1">什么是favicon图标？</span>
+                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isOpen1 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isOpen1 && (
+                <div className="px-4 py-3 bg-blue-50 border-t border-blue-100">
+                  <p className="text-sm text-gray-700"><span className="font-bold text-blue-600">favicon.ico</span>是网站的标志性图标，它显示位于浏览器的地址栏或者在标签上，用于显示网站的logo，目前主要的浏览器都支持favicon.ico图标。</p>
+                </div>
+              )}
+            </div>
+
+            {/* FAQ 2 */}
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <button
+                className="w-full px-4 py-3 bg-white hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
+                onClick={() => setIsOpen2(!isOpen2)}
+              >
+                <div className="w-4 h-4 bg-blue-400 rounded-full border-2 border-white shadow-sm flex-shrink-0"></div>
+                <span className="text-sm font-medium text-gray-900 flex-1">favicon.ico支持哪些尺寸？</span>
+                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isOpen2 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isOpen2 && (
+                <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
+                  <p className="text-sm text-gray-700">最常见的包括：16×16、32×32、48×48、64×64、128×128像素，不同场景会自动选择合适的尺寸显示。</p>
+                </div>
+              )}
+            </div>
+
+            {/* FAQ 3 */}
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <button
+                className="w-full px-4 py-3 bg-white hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
+                onClick={() => setIsOpen3(!isOpen3)}
+              >
+                <div className="w-4 h-4 bg-purple-400 rounded-full border-2 border-white shadow-sm flex-shrink-0"></div>
+                <span className="text-sm font-medium text-gray-900 flex-1">为什么要用ICO而不是PNG？</span>
+                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isOpen3 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isOpen3 && (
+                <div className="px-4 py-3 bg-purple-50 border-t border-purple-100">
+                  <p className="text-sm text-gray-700">favicon.ico是浏览器标准格式，可以包含多个尺寸，兼容性最好，虽然现代浏览器也支持PNG格式，但ICO格式确保在所有浏览器中都能正常显示。</p>
+                </div>
+              )}
+            </div>
+
+            {/* FAQ 4 */}
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <button
+                className="w-full px-4 py-3 bg-white hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
+                onClick={() => setIsOpen4(!isOpen4)}
+              >
+                <div className="w-4 h-4 bg-purple-500 rounded-full border-2 border-white shadow-sm flex-shrink-0"></div>
+                <span className="text-sm font-medium text-gray-900 flex-1">文件大小有限制吗？</span>
+                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isOpen4 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isOpen4 && (
+                <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
+                  <p className="text-sm text-gray-700">建议控制在50KB以内，过大的文件可能影响页面加载速度，建议使用优化的图片质量。</p>
+                </div>
+              )}
+            </div>
+
+            {/* FAQ 5 */}
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <button
+                className="w-full px-4 py-3 bg-white hover:bg-gray-50 flex items-center gap-3 text-left transition-colors"
+                onClick={() => setIsOpen5(!isOpen5)}
+              >
+                <div className="w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full border-2 border-white shadow-sm flex-shrink-0"></div>
+                <span className="text-sm font-medium text-gray-900 flex-1">为什么favicon没有显示？</span>
+                <svg className={`w-4 h-4 text-gray-400 transition-transform ${isOpen5 ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isOpen5 && (
+                <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border-t border-purple-200">
+                  <p className="text-sm text-gray-700">可能是：文件路径不正确；浏览器缓存问题；文件未上传到正确位置；HTML代码语法错误。</p>
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        </motion.div>
       </main>
 
       {/* 底部 */}
