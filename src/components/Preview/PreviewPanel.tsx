@@ -193,6 +193,21 @@ export function PreviewPanel({ convertedIcons, isConverting, progress, error, ic
                     </div>
                   </div>
                 )}
+                        <button
+                          onClick={() => {
+                            saveAs(icoFile.blob, 'favicon.ico');
+                          }}
+                          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center text-sm font-medium"
+                        >
+                          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-6 4l-4 4m0 0l-4-4m4 4v11" />
+                          </svg>
+                          下载 ICO 文件
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               <div className="absolute -top-2 -right-2 w-5 h-5 bg-green-500 border-2 border-white rounded-full flex items-center justify-center">
                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
