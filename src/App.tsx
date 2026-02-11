@@ -94,11 +94,18 @@ function App() {
 
       {/* 主内容 */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-          {/* 左列：上传区 */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          {/* 左列：上传 + 配置 */}
           <div className="xl:col-span-1 space-y-4">
             <UploadPanel onImageUpload={handleImageUpload} />
             
+            {/* 配置选项 */}
+            <SizePanel
+              settings={settings}
+              onSettingsChange={updateSettings}
+              onToggleSize={toggleSize}
+            />
+
             {/* 转换按钮 */}
             <ConvertButton
               hasImage={!!currentImage}
@@ -108,18 +115,9 @@ function App() {
             />
           </div>
 
-          {/* 中列：配置和预览 */}
+          {/* 右列：预览和下载 */}
           <div className="xl:col-span-1 space-y-4">
-            <SizePanel
-              settings={settings}
-              onSettingsChange={updateSettings}
-              onToggleSize={toggleSize}
-            />
-          </div>
-
-          {/* 右列：预览和下载 - 滚动区域 */}
-          <div className="xl:col-span-1 space-y-4">
-            {/* 预览面板 - 总是显示 */}
+            {/* 预览和下载面板 - 总是显示 */}
             <div className="sticky top-4 space-y-4">
               <PreviewPanel
                 convertedIcons={convertedIcons}
