@@ -26,11 +26,15 @@ export function DownloadPanel({ icoFile, isConverting, hasConvertedIcons, onRese
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      className="bg-white rounded-xl shadow-sm border border-gray-200 p-4"
       >
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">4. 下载文件</h2>
-          <p className="text-sm text-gray-600 mt-1">转换完成后可下载ICO文件</p>
+        <div className="mb-3">
+          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+            <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.707.293H19a2 2 0 012 2v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />
+            </svg>
+            下载文件
+          </h2>
         </div>
 
         <div className="text-center py-8">

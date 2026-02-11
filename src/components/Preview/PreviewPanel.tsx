@@ -16,8 +16,14 @@ export function PreviewPanel({ convertedIcons, isConverting, progress, error }: 
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
       >
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">转换进度</h2>
+        <div className="mb-3">
+          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+            <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 7 12c0 1.892 3.37 7 6.542 7 .66 1.508.269 3.054 1.923 4.084.964.266 1.523-.374 2.874-.015 3.349-.538 3.349-.538-.96 0-2.229-.642-4.072-.015-6.006z" />
+            </svg>
+            转换进度
+          </h2>
         </div>
 
         <div className="space-y-4">
@@ -77,10 +83,15 @@ export function PreviewPanel({ convertedIcons, isConverting, progress, error }: 
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
       >
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">3. 预览结果</h2>
-          <p className="text-sm text-gray-600 mt-1">转换完成后将在此显示预览</p>
-        </div>
+      <div className="mb-3">
+        <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+          <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 7 12c0 1.892 3.37 7 6.542 7 .66 1.508.269 3.054 1.923 4.084.964.266 1.523-.374 2.874-.015 3.349-.538 3.349-.538-.96 0-2.229-.642-4.072-.015-6.006z" />
+          </svg>
+          预览结果
+        </h2>
+      </div>
 
         <div className="flex items-center justify-center py-12 text-gray-400">
           <div className="text-center">
@@ -99,7 +110,7 @@ export function PreviewPanel({ convertedIcons, isConverting, progress, error }: 
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      className="bg-white rounded-xl shadow-sm border border-gray-200 p-4"
     >
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-gray-900">3. 预览结果</h2>

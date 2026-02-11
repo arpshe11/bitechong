@@ -16,16 +16,21 @@ export function UploadPanel({ onImageUpload }: UploadPanelProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+      className="bg-white rounded-xl shadow-sm border border-gray-200 p-4"
     >
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">1. 上传图片</h2>
-        <p className="text-sm text-gray-600 mt-1">支持 JPG、PNG、GIF 格式，最大 500KB</p>
+      <div className="mb-3">
+        <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+          <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+          上传图片
+        </h2>
+        <p className="text-xs text-gray-600 mt-1">支持 JPG、PNG、GIF 格式，最大 500KB</p>
       </div>
 
       {!currentImage ? (
         <div
-          className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
             uploadState.isDragActive
               ? 'border-blue-500 bg-blue-50'
               : 'border-gray-300 hover:border-gray-400 bg-gray-50'
