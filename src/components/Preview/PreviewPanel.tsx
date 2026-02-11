@@ -74,10 +74,9 @@ export function PreviewPanel({ convertedIcons, isConverting, progress, error, ic
           </div>
           </div>
                   </div>
-                </div>
-              </div>
-            </div>
-        </motion.div>
+               </div>
+             </div>
+           </motion.div>
   );
 }
 
