@@ -4,7 +4,6 @@ import type { ImageFile } from './types';
 
 import { UploadPanel } from './components/Upload/UploadPanel';
 import { SizePanel } from './components/Converter/SizePanel';
-import { ConvertButton } from './components/Converter/ConvertButton';
 import { PreviewPanel } from './components/Preview/PreviewPanel';
 import { DownloadPanel } from './components/Download/DownloadPanel';
 
@@ -104,14 +103,9 @@ function App() {
               settings={settings}
               onSettingsChange={updateSettings}
               onToggleSize={toggleSize}
-            />
-
-            {/* 转换按钮 */}
-            <ConvertButton
-              hasImage={!!currentImage}
-              hasValidSizes={hasValidSizes}
-              isConverting={isConverting}
               onConvert={handleConvert}
+              currentImage={currentImage}
+              isConverting={isConverting}
             />
           </div>
 
