@@ -71,12 +71,17 @@ export function PreviewPanel({ convertedIcons, isConverting, progress, error, ic
               <div className="mt-2 text-sm text-red-700">
                 <p>{error}</p>
               </div>
+          </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </motion.div>
-    );
-  }
+  );
+}
 
   if (convertedIcons.length === 0) {
     return (
