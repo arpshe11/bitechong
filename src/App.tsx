@@ -5,7 +5,7 @@ import type { ImageFile } from './types';
 import { UploadPanel } from './components/Upload/UploadPanel';
 import { SizePanel } from './components/Converter/SizePanel';
 import { PreviewPanel } from './components/Preview/PreviewPanel';
-import { DownloadPanel } from './components/Download/DownloadPanel';
+
 
 function App() {
   const [currentImage, setCurrentImage] = useState<ImageFile | null>(null);
@@ -110,22 +110,15 @@ function App() {
           </div>
 
           {/* 右列：预览和下载 */}
-          <div className="xl:col-span-1 space-y-4">
-            {/* 预览和下载面板 - 总是显示 */}
-            <div className="sticky top-4 space-y-4">
+          <div className="xl:col-span-1">
+            {/* 预览面板 - 集成下载功能 */}
+            <div className="sticky top-4">
               <PreviewPanel
                 convertedIcons={convertedIcons}
                 isConverting={isConverting}
                 progress={progress}
                 error={error}
-              />
-
-              {/* 下载面板 */}
-              <DownloadPanel
                 icoFile={icoFile}
-                isConverting={isConverting}
-                hasConvertedIcons={convertedIcons.length > 0}
-                onReset={handleReset}
               />
             </div>
           </div>
