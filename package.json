@@ -17,7 +17,7 @@
     "canvas-to-blob": "^1.0.0",
     "file-saver": "^2.0.5",
     "framer-motion": "^12.34.0",
-    "png-to-ico": "^3.0.1",
+    "icojs": "^0.20.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-dropzone": "^15.0.0",
