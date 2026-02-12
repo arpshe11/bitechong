@@ -76,65 +76,113 @@ export function loadImageToCanvas(file: File): Promise<HTMLCanvasElement> {
 export function resizeImage(
   canvas: HTMLCanvasElement,
   targetSize: number,
-  quality: number = 1.0
+  quality: number = 0.95
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const resizedCanvas = document.createElement('canvas');
-    const resizedCtx = resizedCanvas.getContext('2d');
-    
-    if (!resizedCtx) {
-      reject(new Error('无法获取Canvas上下文'));
-      return;
-    }
-
-    resizedCanvas.width = targetSize;
-    resizedCanvas.height = targetSize;
-
-    // 计算缩放和居中
-    const sourceWidth = canvas.width;
-    const sourceHeight = canvas.height;
-    const sourceRatio = sourceWidth / sourceHeight;
-    const targetRatio = 1; // 正方形
-
-    let drawWidth, drawHeight, offsetX, offsetY;
-
-    if (sourceRatio > targetRatio) {
-      // 原图较宽，高度填满
-      drawHeight = targetSize;
-      drawWidth = drawHeight * sourceRatio;
-      offsetX = (targetSize - drawWidth) / 2;
-      offsetY = 0;
-    } else {
-      // 原图较高，宽度填满
-      drawWidth = targetSize;
-      drawHeight = drawWidth / sourceRatio;
-      offsetX = 0;
-      offsetY = (targetSize - drawHeight) / 2;
-    }
-
-    // 设置图片平滑
-    resizedCtx.imageSmoothingEnabled = true;
-    resizedCtx.imageSmoothingQuality = 'high';
-
-    // 绘制白色背景
-    resizedCtx.fillStyle = '#ffffff';
-    resizedCtx.fillRect(0, 0, targetSize, targetSize);
-
-    // 绘制图片
-    resizedCtx.drawImage(canvas, offsetX, offsetY, drawWidth, drawHeight);
-
-    // 转换为Blob
-    resizedCanvas.toBlob(
-      (blob) => {
-        if (blob) {
-          resolve(blob);
-        } else {
-          reject(new Error('图片处理失败'));
+    // 使用多步缩放算法来提高质量
+    const multiStepResize = (sourceCanvas: HTMLCanvasElement, finalSize: number): HTMLCanvasElement => {
+      let currentCanvas = sourceCanvas;
+      let currentSize = Math.max(sourceCanvas.width, sourceCanvas.height);
+      
+      // 多步缩放，每步不超过2倍
+      while (currentSize > finalSize) {
+        const nextSize = Math.max(finalSize, Math.floor(currentSize / 2));
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        if (!tempCtx) {
+          throw new Error('无法获取Canvas上下文');
         }
-      },
-      'image/png',
-      quality
-    );
+        
+        tempCanvas.width = nextSize;
+        tempCanvas.height = nextSize;
+        
+        // 高质量缩放设置
+        tempCtx.imageSmoothingEnabled = true;
+        tempCtx.imageSmoothingQuality = 'high';
+        
+        // 保持宽高比的居中裁剪
+        const sourceSize = Math.max(currentCanvas.width, currentCanvas.height);
+        const sourceX = (currentCanvas.width - sourceSize) / 2;
+        const sourceY = (currentCanvas.height - sourceSize) / 2;
+        
+        tempCtx.drawImage(
+          currentCanvas,
+          sourceX, sourceY, sourceSize, sourceSize,
+          0, 0, nextSize, nextSize
+        );
+        
+        currentCanvas = tempCanvas;
+        currentSize = nextSize;
+      }
+      
+      return currentCanvas;
+    };
+
+    try {
+      // 创建正方形源画布
+      const sourceSize = Math.max(canvas.width, canvas.height);
+      const squareCanvas = document.createElement('canvas');
+      const squareCtx = squareCanvas.getContext('2d');
+      
+      if (!squareCtx) {
+        throw new Error('无法获取Canvas上下文');
+      }
+      
+      squareCanvas.width = sourceSize;
+      squareCanvas.height = sourceSize;
+      
+      // 绘制白色背景
+      squareCtx.fillStyle = '#ffffff';
+      squareCtx.fillRect(0, 0, sourceSize, sourceSize);
+      
+      // 居中绘制原图
+      const offsetX = (sourceSize - canvas.width) / 2;
+      const offsetY = (sourceSize - canvas.height) / 2;
+      squareCtx.drawImage(canvas, offsetX, offsetY);
+      
+      // 执行多步缩放
+      const finalCanvas = multiStepResize(squareCanvas, targetSize);
+      
+      // 确保最终尺寸正确
+      if (finalCanvas.width !== targetSize || finalCanvas.height !== targetSize) {
+        const correctCanvas = document.createElement('canvas');
+        const correctCtx = correctCanvas.getContext('2d');
+        
+        if (!correctCtx) {
+          throw new Error('无法获取Canvas上下文');
+        }
+        
+        correctCanvas.width = targetSize;
+        correctCanvas.height = targetSize;
+        correctCtx.imageSmoothingEnabled = true;
+        correctCtx.imageSmoothingQuality = 'high';
+        correctCtx.drawImage(finalCanvas, 0, 0, targetSize, targetSize);
+        
+        finalCanvas.width = targetSize;
+        finalCanvas.height = targetSize;
+        const finalCtx = finalCanvas.getContext('2d');
+        if (finalCtx) {
+          finalCtx.drawImage(correctCanvas, 0, 0);
+        }
+      }
+      
+      // 转换为高质量PNG
+      finalCanvas.toBlob(
+        (blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('图片处理失败'));
+          }
+        },
+        'image/png',
+        quality
+      );
+      
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
