@@ -57,7 +57,7 @@ function SparklineChart({ value, max, color = 'blue' }: { value: number; max: nu
   return (
     <div className="w-full bg-gray-200 rounded-full h-2">
       <div 
-        className={`${colorClasses[color]} h-2 rounded-full transition-all duration-300`}
+        className={`${colorClasses[color as keyof typeof colorClasses]} h-2 rounded-full transition-all duration-300`}
         style={{ width: `${percentage}%` }}
       />
     </div>
@@ -217,7 +217,7 @@ export default function AnalyticsDashboard() {
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white ${
                         size.size >= 64 ? 'bg-purple-500' : 'bg-blue-500'
                       }`}>
-                        {size}×{size}
+                        {size.size}×{size.size}
                       </div>
                       <span className="text-gray-700 font-medium">{size.count} 次</span>
                     </div>

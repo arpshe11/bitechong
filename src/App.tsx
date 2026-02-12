@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import AnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
 import { FeedbackModal } from './components/Feedback/FeedbackModal';
 import { motion } from 'framer-motion';
 import { useIcoConverter } from './hooks/useIcoConverter';
@@ -11,7 +10,7 @@ import { PreviewPanel } from './components/Preview/PreviewPanel';
 
 function App() {
   const [currentImage, setCurrentImage] = useState<ImageFile | null>(null);
-  const [showAnalytics, setShowAnalytics] = useState(true); // 默认显示分析面板
+
   const [showFeedback, setShowFeedback] = useState(false);
   const [isOpen1, setIsOpen1] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
@@ -88,6 +87,8 @@ function App() {
     }
   }, []);
 
+
+
   // 清理函数
   React.useEffect(() => {
     return () => {
@@ -100,19 +101,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 分析控制按钮 */}
-      <div className="fixed top-4 right-4 z-50">
-        <button
-          onClick={() => setShowAnalytics(!showAnalytics)}
-          className={`px-3 py-2 rounded-full text-xs font-medium transition-all ${
-            showAnalytics 
-              ? 'bg-green-500 text-white hover:bg-green-600' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-          }`}
-        >
-          {showAnalytics ? '📊 隐藏分析' : '📊 显示分析'}
-        </button>
-      </div>
+
 
       {/* 头部 */}
       <header className="bg-white shadow-sm border-b border-gray-200">
@@ -214,12 +203,7 @@ function App() {
           </div>
         </div>
 
-        {/* 下方：分析仪表板 */}
-        {showAnalytics && (
-          <div className="mt-8">
-            <AnalyticsDashboard />
-          </div>
-        )}
+        {/* 分析仪表板已隐藏 - 仅通过特殊方式访问 */}
 
         {/* 下方：预览结果 */}
         <div>
@@ -382,6 +366,8 @@ function App() {
         onClose={() => setShowFeedback(false)}
         onSubmit={handleFeedbackSubmit}
       />
+
+
     </div>
   );
 }
