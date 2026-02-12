@@ -105,7 +105,7 @@ function App() {
 
       {/* 头部 */}
       <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -333,7 +333,7 @@ function App() {
 
       {/* 底部 */}
       <footer className="bg-white border-t border-gray-200 mt-auto">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <p className="text-sm text-gray-500">
               © 2026 ICO图标制作工具. 专为Web开发者打造的图标转换工具
