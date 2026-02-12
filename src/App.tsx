@@ -1,4 +1,6 @@
 import React, { useState, useCallback } from 'react';
+import AnalyticsDashboard from './components/Analytics/AnalyticsDashboard';
+import { FeedbackModal } from './components/Feedback/FeedbackModal';
 import { motion } from 'framer-motion';
 import { useIcoConverter } from './hooks/useIcoConverter';
 import type { ImageFile } from './types';
@@ -7,14 +9,16 @@ import { UploadPanel } from './components/Upload/UploadPanel';
 import { SizePanel } from './components/Converter/SizePanel';
 import { PreviewPanel } from './components/Preview/PreviewPanel';
 
-
 function App() {
   const [currentImage, setCurrentImage] = useState<ImageFile | null>(null);
+  const [showAnalytics, setShowAnalytics] = useState(true); // 默认显示分析面板
+  const [showFeedback, setShowFeedback] = useState(false);
   const [isOpen1, setIsOpen1] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [isOpen3, setIsOpen3] = useState(false);
   const [isOpen4, setIsOpen4] = useState(false);
   const [isOpen5, setIsOpen5] = useState(false);
+  
   const {
     isConverting,
     progress,
@@ -42,14 +46,47 @@ function App() {
   const handleConvert = useCallback(async () => {
     if (currentImage) {
       try {
+        // 转换开始事件
+        if (window.trackConversionStart) {
+          window.trackConversionStart(settings);
+        }
+        
+        const startTime = performance.now();
+        
         await generateICO(currentImage, settings);
+        
+        // 转换完成事件
+        const endTime = performance.now();
+        if (window.trackConversionComplete) {
+          window.trackConversionComplete(endTime - startTime, settings, true);
+        }
       } catch (err) {
         console.error('转换失败:', err);
+        // 错误事件
+        if (typeof (window as any).gtag !== 'undefined' && window.trackError) {
+          window.trackError('conversion_error', {
+            error_type: (err as any).name || 'unknown',
+            error_message: (err as any).message || 'Unknown error occurred'
+          });
+        }
       }
     }
   }, [currentImage, settings, generateICO]);
 
-
+  const handleFeedbackSubmit = useCallback((feedback: any) => {
+    console.log('用户反馈提交:', feedback);
+    
+    // 可以在这里添加额外的反馈处理逻辑
+    // 例如：发送到数据库、邮件通知等
+    
+    // 显示成功提示
+    if (typeof (window as any).gtag !== 'undefined') {
+      (window as any).gtag('event', 'feedback_success', {
+        event_category: 'engagement',
+        event_label: 'user_feedback'
+      });
+    }
+  }, []);
 
   // 清理函数
   React.useEffect(() => {
@@ -61,30 +98,40 @@ function App() {
     };
   }, [cleanup, currentImage]);
 
-
-
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* 分析控制按钮 */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={() => setShowAnalytics(!showAnalytics)}
+          className={`px-3 py-2 rounded-full text-xs font-medium transition-all ${
+            showAnalytics 
+              ? 'bg-green-500 text-white hover:bg-green-600' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          {showAnalytics ? '📊 隐藏分析' : '📊 显示分析'}
+        </button>
+      </div>
+
       {/* 头部 */}
       <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                   </svg>
                 </div>
               </div>
-              <h1 className="ml-3 text-xl font-semibold text-gray-900">
+              <h1 className="ml-3 text-xl font-bold text-gray-900">
                 ICO图标制作工具
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">
-                在线转换，无需注册
-              </span>
+              <span className="text-sm text-gray-500">在线转换，无需注册</span>
             </div>
           </div>
         </div>
@@ -166,6 +213,13 @@ function App() {
             />
           </div>
         </div>
+
+        {/* 下方：分析仪表板 */}
+        {showAnalytics && (
+          <div className="mt-8">
+            <AnalyticsDashboard />
+          </div>
+        )}
 
         {/* 下方：预览结果 */}
         <div>
@@ -300,7 +354,18 @@ function App() {
             <p className="text-sm text-gray-500">
               © 2026 ICO图标制作工具. 专为Web开发者打造的图标转换工具
             </p>
-            <div className="mt-2 flex items-center justify-center space-x-4 text-xs text-gray-400">
+            <div className="mt-4 flex items-center justify-center space-x-4">
+              <button
+                onClick={() => setShowFeedback(true)}
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-105"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+                提交反馈
+              </button>
+            </div>
+            <div className="mt-4 flex items-center justify-center space-x-4 text-xs text-gray-400">
               <span>支持格式：JPG, PNG, GIF</span>
               <span>•</span>
               <span>文件大小限制：500KB</span>
@@ -310,6 +375,13 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* 反馈模态框 */}
+      <FeedbackModal
+        isOpen={showFeedback}
+        onClose={() => setShowFeedback(false)}
+        onSubmit={handleFeedbackSubmit}
+      />
     </div>
   );
 }

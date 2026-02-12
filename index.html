@@ -7,9 +7,215 @@
     <title>在线ICO图标制作转换工具_免费favicon.ico生成器_比特虫_Bitechong.Com</title>
     <meta name="description" content="专业的在线ICO图标制作工具，支持JPG、PNG、GIF转ICO格式。一键生成favicon.ico文件，包含多种尺寸，完美适配所有浏览器。免费在线转换，即用即下载。" />
     <meta name="keywords" content="在线ICO制作,ICO图标转换器,favicon.ico生成器,图片转ICO,JPG转ICO,PNG转ICO,GIF转ICO,网站图标制作,favicon制作工具,免费ICO转换,图标生成器" />
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+    
+    <!-- 页面浏览量 -->
+    <script>
+      gtag('event', 'page_view', {
+        page_title: 'ICO图标制作工具',
+        page_location: window.location.href
+      });
+    </script>
+    
+    <!-- 自定义事件跟踪脚本 -->
+    <script>
+      // 文件上传跟踪
+      function trackFileUpload(fileSize) {
+        gtag('event', 'file_upload', {
+          file_type: file.type,
+          file_size: Math.round(file.size / 1024) // KB
+        });
+      }
+
+      // ICO转换跟踪
+      function trackConversionStart(settings) {
+        gtag('event', 'conversion_start', {
+          preset_used: settings.sizes.length === 1 && settings.sizes[0] === 32 ? 'single' : 
+                       settings.sizes.length === 3 && settings.sizes.every(s => [16, 32, 48].includes(s)) ? 'minimalist' :
+                       settings.sizes.length === 4 && settings.sizes.every(s => [16, 32, 48, 64].includes(s)) ? 'standard' :
+                       settings.sizes.length === 5 ? 'complete' : 'custom',
+          sizes_count: settings.sizes.length,
+          quality: Math.round(settings.quality * 100)
+        });
+      }
+
+      // ICO转换完成跟踪
+      function trackConversionComplete(duration, settings, success) {
+        gtag('event', success ? 'conversion_complete' : 'conversion_failed', {
+          success: success,
+          duration: duration,
+          sizes_count: settings.sizes.length,
+          quality: Math.round(settings.quality * 100)
+        });
+      }
+
+      // ICO文件下载跟踪
+      function trackDownload(fileSize, fileType) {
+        gtag('event', 'file_download', {
+          file_type: fileType,
+          file_size: Math.round(fileSize / 1024) // KB
+        });
+      }
+
+      // FAQ交互跟踪
+      function trackFAQInteraction(faqNumber, action) {
+        gtag('event', 'faq_interaction', {
+          faq_number: faqNumber,
+          action: action
+        });
+      }
+
+      // 预设选择跟踪
+      function trackPresetSelect(presetName) {
+        gtag('event', 'preset_select', { preset_name: presetName });
+      }
+
+      // 尺寸选择跟踪
+      function trackSizeToggle(size, action) {
+        gtag('event', 'size_toggle', { 
+          size_value: size,
+          action: action
+        });
+      }
+
+      // 暴露错误跟踪
+      function trackError(errorType, errorMessage) {
+        gtag('event', 'error', {
+          error_type: errorType,
+          error_message: errorMessage
+        });
+      }
+
+      // 页面性能跟踪
+      window.addEventListener('load', () => {
+        const loadTime = performance.now();
+        gtag('event', 'page_load_time', {
+          load_time: Math.round(performance.now() - loadTime)
+        });
+      });
+
+      // 页面离开跟踪
+      window.addEventListener('beforeunload', () => {
+        gtag('event', 'page_leave', {});
+      });
+
+      // 全局错误处理
+      window.addEventListener('error', (event) => {
+        gtag('event', 'javascript_error', {
+          error_message: event.message,
+          error_filename: event.filename,
+          error_lineno: event.lineno,
+          error_col: event.colno
+        });
+      });
+
+      // 导出跟踪函数到全局作用域
+      window.trackFileUpload = trackFileUpload;
+      window.trackConversionStart = trackConversionStart;
+      window.trackConversionComplete = trackConversionComplete;
+      window.trackDownload = trackDownload;
+      trackFAQInteraction = trackFAQInteraction;
+      trackPresetSelect = trackPresetSelect;
+      trackSizeToggle = trackSizeToggle;
+      trackError = trackError;
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    
+    <!-- 自定义事件跟踪脚本 -->
+    <script>
+      // 导出跟踪函数到全局作用域
+      window.trackFileUpload = function(fileSize) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'file_upload', {
+            file_type: file.type,
+            file_size: Math.round(fileSize / 1024) // KB
+          });
+        }
+      };
+      
+      window.trackConversionStart = function(settings) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'conversion_start', {
+            preset_used: settings.sizes.length === 1 && settings.sizes[0] === 32 ? 'single' : 
+                       settings.sizes.length === 3 && settings.sizes.every(s => [16, 32, 48].includes(s)) ? 'minimalist' :
+                       settings.siles.length === 4 && settings.sizes.every(s => [16, 32, 48, 64].includes(s)) ? 'standard' :
+                       settings.sizes.length === 5 ? 'complete' : 'custom',
+            sizes_count: settings.sizes.length,
+            quality: Math.round(settings.quality * 100)
+          });
+        }
+      };
+      
+      window.trackConversionComplete = function(duration, settings, success) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', success ? 'conversion_complete' : 'conversion_failed', {
+            success: success,
+            duration: duration,
+            sizes_count: settings.sizes.length,
+            quality: Math.round(settings.quality * 100)
+          });
+        }
+      };
+      
+      window.trackDownload = function(fileSize, fileType) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'file_download', {
+            file_type: fileType,
+            file_size: Math.round(fileSize / 1024)
+          });
+        }
+      };
+      
+      window.trackFAQInteraction = function(faqNumber, action) {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'faq_interaction', {
+            faq_number: faqNumber,
+            action: action
+          });
+        }
+      };
+      
+      // 页面浏览量事件
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'page_view', {
+          page_title: document.title,
+          page_location: window.location.href
+        });
+      }
+      
+      // 性能监控
+      window.addEventListener('load', () => {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'page_load_time', {
+            load_time: performance.now()
+          });
+        }
+      });
+      
+      // 错误处理
+      window.addEventListener('error', (event) => {
+        if (      instanceof event.error !== 'undefined' && typeof gtag !== 'undefined') {
+          gtag('event', 'javascript_error', {
+            error_type: event.error.name || 'javascript_error',
+            error_message: event.error.message || 'Unknown JavaScript error',
+            error_filename: event.filename,
+            error_lineno: event.lineno,
+            error_col: event.colno,
+            error_stack: event.error.stack
+          });
+        }
+      });
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
