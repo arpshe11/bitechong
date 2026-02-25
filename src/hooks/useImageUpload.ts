@@ -103,6 +103,7 @@ export function useImageUpload() {
 
   return {
     currentImage,
+    setCurrentImage,
     uploadState,
     handleDragEnter,
     handleDragLeave,

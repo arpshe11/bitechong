@@ -125,13 +125,24 @@ export function PreviewPanel({ convertedIcons, isConverting, progress, error, ic
             className="text-center group"
           >
             <div className="relative inline-block">
-              <div className="w-16 h-16 mx-auto border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
+              <div 
+                className="mx-auto border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center"
+                style={{ 
+                  width: Math.min(icon.size + 16, 96), 
+                  height: Math.min(icon.size + 16, 96)
+                }}
+              >
                 <img
                   src={icon.url}
                   alt={`${icon.size}×${icon.size} 图标`}
-                  className="w-full h-full object-contain"
+                  width={icon.size}
+                  height={icon.size}
                   style={{ 
-                    imageRendering: icon.size <= 32 ? 'pixelated' : '-webkit-optimize-contrast'
+                    imageRendering: icon.size <= 32 ? 'pixelated' : 'auto'
+                  }}
+                  onError={(e) => {
+                    console.error('图片加载失败:', icon.url);
+                    e.currentTarget.style.display = 'none';
                   }}
                 />
               </div>

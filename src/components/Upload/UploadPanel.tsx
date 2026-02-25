@@ -1,15 +1,27 @@
 import { motion } from 'framer-motion';
 import { useImageUpload } from '../../hooks/useImageUpload';
+import type { ImageFile } from '../../types';
 
 export interface UploadPanelProps {
   onImageUpload: (file: File) => void;
+  currentImage?: ImageFile | null;
+  removeBackgroundEnabled?: boolean;
 }
 
-export function UploadPanel({ onImageUpload }: UploadPanelProps) {
-  const { currentImage, uploadState, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, formatFileSize } = useImageUpload();
+export function UploadPanel({ onImageUpload, currentImage: externalImage, removeBackgroundEnabled }: UploadPanelProps) {
+  const { uploadState, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, setCurrentImage } = useImageUpload();
+  
+  const currentImage = externalImage;
 
   const handleFileSelect = (file: File) => {
     onImageUpload(file);
+    setCurrentImage({
+      file,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      url: URL.createObjectURL(file)
+    });
   };
 
   return (
@@ -30,7 +42,7 @@ export function UploadPanel({ onImageUpload }: UploadPanelProps) {
 
       {!currentImage ? (
         <div
-          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+          className={`relative border-2 border-dashed rounded-lg h-48 text-center transition-colors flex items-center justify-center ${
             uploadState.isDragActive
               ? 'border-blue-500 bg-blue-50'
               : 'border-gray-300 hover:border-gray-400 bg-gray-50'
@@ -77,59 +89,44 @@ export function UploadPanel({ onImageUpload }: UploadPanelProps) {
           )}
         </div>
       ) : (
-        <div className="space-y-4">
-          <div className="relative">
-            <img
-              src={currentImage.url}
-              alt="上传的图片"
-              className="max-w-full h-auto rounded-lg border border-gray-200"
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleFileSelect(new File([''], '', { type: 'image/png' }));
-              }}
-              className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-              title="移除图片"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+        <div
+          className="relative border-2 border-dashed rounded-lg cursor-pointer overflow-hidden"
+          style={removeBackgroundEnabled ? {
+            backgroundImage: 'linear-gradient(45deg, #eee 25%, transparent 25%), linear-gradient(-45deg, #eee 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #eee 75%), linear-gradient(-45deg, transparent 75%, #eee 75%)',
+            backgroundSize: '16px 16px',
+            backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px'
+          } : undefined}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={(e) => {
+            handleDrop(e);
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) {
+              handleFileSelect(files[0]);
+            }
+          }}
+          onClick={() => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+              const files = (e.target as HTMLInputElement).files;
+              if (files && files.length > 0) {
+                handleFileSelect(files[0]);
+              }
+            };
+            input.click();
+          }}
+        >
+          <img
+            src={currentImage.url}
+            alt="上传的图片"
+            className="w-full h-48 object-contain"
+          />
+          <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+            <span className="text-white text-sm font-medium">点击或拖拽更换图片</span>
           </div>
-
-          <div className="bg-gray-50 p-3 rounded-lg">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">文件名：</span>
-              <span className="text-gray-900 font-medium">{currentImage.name}</span>
-            </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-600">大小：</span>
-              <span className="text-gray-900 font-medium">{formatFileSize(currentImage.size)}</span>
-            </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-600">格式：</span>
-              <span className="text-gray-900 font-medium">{currentImage.type}</span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              const input = document.createElement('input');
-              input.type = 'file';
-              input.accept = 'image/*';
-              input.onchange = (e) => {
-                const files = (e.target as HTMLInputElement).files;
-                if (files && files.length > 0) {
-                  handleFileSelect(files[0]);
-                }
-              };
-              input.click();
-            }}
-            className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
-          >
-            重新选择图片
-          </button>
         </div>
       )}
     </motion.div>

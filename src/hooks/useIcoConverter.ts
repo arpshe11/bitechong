@@ -58,7 +58,7 @@ export function useIcoConverter() {
     }
   }, []);
 
-  const generateICO = useCallback(async (imageFile: ImageFile, conversionSettings: ConversionSettings = settings) => {
+  const generateICO = useCallback(async (imageFile: ImageFile, conversionSettings: ConversionSettings = settings, removeBackground: boolean = false) => {
     setIsConverting(true);
     setProgress(0);
     setError(null);
@@ -70,12 +70,38 @@ export function useIcoConverter() {
         cleanupUrl(icoFile.url);
       }
 
-      // 转换图片
-      const icons = await convertImage(imageFile, conversionSettings);
-      setConvertedIcons(icons);
+      let fileToConvert = imageFile;
+      
+      // 如果需要移除背景
+      if (removeBackground) {
+        const { removeBackground: removeBg } = await import('../utils/aiProcessor');
+        const blob = await removeBg(imageFile.file);
+        
+        // 检查blob中的透明像素
+        const testImg = new Image();
+        const blobUrl = URL.createObjectURL(blob);
+        testImg.src = blobUrl;
+        await new Promise(r => testImg.onload = r);
+        
+        const testCanvas = document.createElement('canvas');
+        testCanvas.width = testImg.width;
+        testCanvas.height = testImg.height;
+        testCanvas.getContext('2d')?.drawImage(testImg, 0, 0);
+        
+        fileToConvert = {
+          ...imageFile,
+          file: new File([blob], 'removed_bg.png', { type: 'image/png' }),
+          url: URL.createObjectURL(blob)
+        };
+      }
 
+      // 转换图片
+      const icons = await convertImage(fileToConvert, conversionSettings);
+      setConvertedIcons(icons);
+      
       // 生成ICO文件
       const icoResult = await createICOFile(icons);
+      setIcoFile(icoResult);
       setIcoFile(icoResult);
 
       return { icons, icoFile: icoResult };

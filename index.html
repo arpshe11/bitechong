@@ -148,7 +148,7 @@
           gtag('event', 'conversion_start', {
             preset_used: settings.sizes.length === 1 && settings.sizes[0] === 32 ? 'single' : 
                        settings.sizes.length === 3 && settings.sizes.every(s => [16, 32, 48].includes(s)) ? 'minimalist' :
-                       settings.siles.length === 4 && settings.sizes.every(s => [16, 32, 48, 64].includes(s)) ? 'standard' :
+                       settings.sizes.length === 4 && settings.sizes.every(s => [16, 32, 48, 64].includes(s)) ? 'standard' :
                        settings.sizes.length === 5 ? 'complete' : 'custom',
             sizes_count: settings.sizes.length,
             quality: Math.round(settings.quality * 100)
@@ -204,7 +204,7 @@
       
       // 错误处理
       window.addEventListener('error', (event) => {
-        if (      instanceof event.error !== 'undefined' && typeof gtag !== 'undefined') {
+        if (typeof event.error !== 'undefined' && typeof gtag !== 'undefined') {
           gtag('event', 'javascript_error', {
             error_type: event.error.name || 'javascript_error',
             error_message: event.error.message || 'Unknown JavaScript error',

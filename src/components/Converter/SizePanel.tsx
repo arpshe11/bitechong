@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import type { ConversionSettings, SupportedSize, ImageFile } from '../../types';
+import { AIPanel } from '../AI/AIPanel';
 
 export interface SizePanelProps {
   settings: ConversionSettings;
@@ -8,11 +9,13 @@ export interface SizePanelProps {
   onConvert: () => void;
   currentImage: ImageFile | null;
   isConverting: boolean;
+  removeBackgroundEnabled?: boolean;
+  onRemoveBackgroundToggle?: (enabled: boolean) => void;
 }
 
 const availableSizes: SupportedSize[] = [16, 32, 48, 64, 128];
 
-export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert, currentImage, isConverting }: SizePanelProps) {
+export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert, currentImage, isConverting, removeBackgroundEnabled, onRemoveBackgroundToggle }: SizePanelProps) {
 
   return (
     <motion.div
@@ -40,10 +43,10 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button
               onClick={() => onSettingsChange({ sizes: [16, 32, 48] })}
-              className={`group relative p-3 rounded-xl transition-all duration-200 transform hover:scale-105 ${
+              className={`group relative h-8 rounded-xl transition-all duration-200 transform hover:scale-105 ${
                 settings.sizes.length === 3 && settings.sizes.every(s => [16, 32, 48].includes(s))
-                  ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25 ring-2 ring-blue-500 ring-offset-2'
-                  : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200 border border-gray-200'
+                  ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25'
+                  : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200'
               }`}
             >
               <div className="flex flex-col items-center justify-center h-full">
@@ -57,10 +60,10 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
             
             <button
               onClick={() => onSettingsChange({ sizes: [16, 32, 48, 64] })}
-              className={`group relative p-3 rounded-xl transition-all duration-200 transform hover:scale-105 ${
+              className={`group relative h-8 rounded-xl transition-all duration-200 transform hover:scale-105 ${
                 settings.sizes.length === 4 && settings.sizes.every(s => [16, 32, 48, 64].includes(s))
-                  ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25 ring-2 ring-emerald-500 ring-offset-2'
-                  : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200 border border-gray-200'
+                  ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25'
+                  : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200'
               }`}
             >
               <div className="flex flex-col items-center justify-center h-full">
@@ -74,10 +77,10 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
 
             <button
               onClick={() => onSettingsChange({ sizes: [16, 32, 48, 64, 128] })}
-              className={`group relative p-3 rounded-xl transition-all duration-200 transform hover:scale-105 ${
+              className={`group relative h-8 rounded-xl transition-all duration-200 transform hover:scale-105 ${
                 settings.sizes.length === 5
-                  ? 'bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/25 ring-2 ring-purple-500 ring-offset-2'
-                  : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200 border border-gray-200'
+                  ? 'bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-lg shadow-purple-500/25'
+                  : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200'
               }`}
             >
               <div className="flex flex-col items-center justify-center h-full">
@@ -91,10 +94,10 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
 
             <button
               onClick={() => onSettingsChange({ sizes: [32] })}
-              className={`group relative p-3 rounded-xl transition-all duration-200 transform hover:scale-105 ${
+              className={`group relative h-8 rounded-xl transition-all duration-200 transform hover:scale-105 ${
                 settings.sizes.length === 1 && settings.sizes[0] === 32
                   ? 'bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/25 ring-2 ring-amber-500 ring-offset-2'
-                  : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200 border border-gray-200'
+                  : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200'
               }`}
             >
               <div className="flex flex-col items-center justify-center h-full">
@@ -110,7 +113,7 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
 
         {/* 自定义尺寸 - 现代化设计 */}
         <div>
-          <label className="text-sm font-semibold text-gray-800 mb-2 flex items-center justify-between">
+          <label className="text-sm font-semibold text-gray-800 mb-1 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
               自定义尺寸
@@ -119,24 +122,19 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
               {settings.sizes.length}个选中
             </span>
           </label>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-5 gap-y-1 gap-x-2">
             {availableSizes.map((size) => (
               <button
                 key={size}
                 onClick={() => onToggleSize(size)}
-                className={`group relative aspect-square rounded-xl transition-all duration-200 transform hover:scale-105 w-16 h-16 ${
+                className={`group relative aspect-square rounded-xl transition-all duration-200 transform hover:scale-105 w-[100px] h-8 ${
                   settings.sizes.includes(size)
-                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25 ring-2 ring-blue-500 ring-offset-2'
-                    : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200 border border-gray-200'
+                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25'
+                    : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-700 hover:from-gray-100 hover:to-gray-200'
                 }`}
               >
-                <div className="flex flex-col items-center justify-center space-y-1 h-full">
-                  <div className="text-lg font-bold font-mono">
-                    {size}
-                  </div>
-                  <div className={`text-xs font-medium ${
-                    settings.sizes.includes(size) ? 'text-blue-100' : 'text-gray-500'
-                  }`}>
+                <div className="flex flex-col items-center justify-center h-full">
+                  <div className="text-sm font-semibold">
                     {size}×{size}
                   </div>
                 </div>
@@ -152,9 +150,9 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
           </div>
         </div>
 
-        {/* 质量设置 - 现代化设计 */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-3 border border-gray-200">
-          <div className="flex items-center justify-between mb-2">
+        {/* 质量设置 */}
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-1 border border-gray-200">
+          <div className="flex items-center justify-between mb-1">
             <label className="text-sm font-semibold text-gray-800 flex items-center gap-2">
               <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
               图片质量
@@ -163,7 +161,7 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
               {Math.round(settings.quality * 100)}%
             </span>
           </div>
-          <div className="relative mt-2">
+          <div className="relative">
             <input
               type="range"
               min="0.1"
@@ -176,7 +174,7 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
                 background: `linear-gradient(to right, #3B82F6 0%, #3B82F6 ${settings.quality * 100}%, #E5E7EB ${settings.quality * 100}%, #E5E7EB 100%)`
               }}
             />
-            <div className="flex justify-between mt-2">
+            <div className="flex justify-between mt-1">
               <span className="text-xs text-gray-500">低</span>
               <span className="text-xs text-gray-500">中</span>
               <span className="text-xs text-gray-500">高</span>
@@ -184,15 +182,22 @@ export function SizePanel({ settings, onSettingsChange, onToggleSize, onConvert,
           </div>
         </div>
 
+        {/* AI 智能处理 */}
+        <AIPanel 
+          currentImage={currentImage?.file || null}
+          removeBackgroundEnabled={removeBackgroundEnabled || false}
+          onRemoveBackgroundToggle={onRemoveBackgroundToggle || (() => {})}
+        />
+
         {/* 转换按钮 - 炫酷设计 */}
-        <div className="mt-auto">
+        <div className="mt-2">
           <button
           onClick={onConvert}
           disabled={!currentImage || settings.sizes.length === 0 || isConverting}
           className={`group relative w-full py-3 px-5 rounded-2xl font-bold text-base transition-all duration-300 transform overflow-hidden ${
             !currentImage || settings.sizes.length === 0 || isConverting
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 text-white hover:scale-105 hover:shadow-2xl'
+              : 'bg-gradient-to-r from-gray-200 to-green-200 text-gray-800 hover:scale-105 hover:shadow-2xl'
           }`}
         >
           {/* 背景动画效果 */}

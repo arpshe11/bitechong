@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FeedbackModal } from './components/Feedback/FeedbackModal';
 import { motion } from 'framer-motion';
 import { useIcoConverter } from './hooks/useIcoConverter';
@@ -10,14 +10,16 @@ import { PreviewPanel } from './components/Preview/PreviewPanel';
 
 function App() {
   const [currentImage, setCurrentImage] = useState<ImageFile | null>(null);
-
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [removeBackgroundEnabled, setRemoveBackgroundEnabled] = useState(false);
+  const [isProcessingBg, setIsProcessingBg] = useState(false);
+  const [originalImage, setOriginalImage] = useState<ImageFile | null>(null);
   const [isOpen1, setIsOpen1] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [isOpen3, setIsOpen3] = useState(false);
   const [isOpen4, setIsOpen4] = useState(false);
   const [isOpen5, setIsOpen5] = useState(false);
-  
+  const [showFeedback, setShowFeedback] = useState(false);
+
   const {
     isConverting,
     progress,
@@ -31,6 +33,37 @@ function App() {
     cleanup
   } = useIcoConverter();
 
+  // 监听移除背景状态变化
+  useEffect(() => {
+    const applyRemoveBackground = async () => {
+      if (!originalImage || isConverting) return;
+      
+      if (removeBackgroundEnabled && !isProcessingBg) {
+        setIsProcessingBg(true);
+        try {
+          const { removeBackground } = await import('./utils/aiProcessor');
+          const blob = await removeBackground(originalImage.file);
+          const processedFile = new File([blob], 'removed_bg.png', { type: 'image/png' });
+          const newUrl = URL.createObjectURL(blob);
+          setCurrentImage({
+            ...originalImage,
+            file: processedFile,
+            url: newUrl,
+            name: 'removed_bg.png'
+          });
+        } catch (err) {
+          console.error('移除背景失败:', err);
+        } finally {
+          setIsProcessingBg(false);
+        }
+      } else if (!removeBackgroundEnabled && originalImage) {
+        setCurrentImage(originalImage);
+      }
+    };
+    
+    applyRemoveBackground();
+  }, [removeBackgroundEnabled, originalImage, isConverting]);
+
   const handleImageUpload = useCallback((file: File) => {
     const imageFile: ImageFile = {
       file,
@@ -40,6 +73,8 @@ function App() {
       url: URL.createObjectURL(file)
     };
     setCurrentImage(imageFile);
+    setOriginalImage(imageFile);
+    setRemoveBackgroundEnabled(false);
   }, []);
 
   const handleConvert = useCallback(async () => {
@@ -52,7 +87,7 @@ function App() {
         
         const startTime = performance.now();
         
-        await generateICO(currentImage, settings);
+        await generateICO(currentImage, settings, removeBackgroundEnabled);
         
         // 转换完成事件
         const endTime = performance.now();
@@ -70,7 +105,7 @@ function App() {
         }
       }
     }
-  }, [currentImage, settings, generateICO]);
+  }, [currentImage, settings, generateICO, removeBackgroundEnabled]);
 
   const handleFeedbackSubmit = useCallback((feedback: any) => {
     console.log('用户反馈提交:', feedback);
@@ -105,7 +140,7 @@ function App() {
 
       {/* 头部 */}
       <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -132,7 +167,7 @@ function App() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
           {/* 左侧：上传面板 */}
           <div className="space-y-6">
-            <UploadPanel onImageUpload={handleImageUpload} />
+            <UploadPanel onImageUpload={handleImageUpload} currentImage={currentImage} />
             
             {/* 安装说明 */}
             <motion.div
@@ -191,7 +226,7 @@ function App() {
           </div>
 
           {/* 右侧：配置选项 */}
-          <div className="h-full">
+          <div className="h-full space-y-6">
             <SizePanel
               settings={settings}
               onSettingsChange={updateSettings}
@@ -199,6 +234,8 @@ function App() {
               onConvert={handleConvert}
               currentImage={currentImage}
               isConverting={isConverting}
+              removeBackgroundEnabled={removeBackgroundEnabled}
+              onRemoveBackgroundToggle={setRemoveBackgroundEnabled}
             />
           </div>
         </div>

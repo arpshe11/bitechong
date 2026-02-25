@@ -132,11 +132,7 @@ export function resizeImage(
       squareCanvas.width = sourceSize;
       squareCanvas.height = sourceSize;
       
-      // 绘制白色背景
-      squareCtx.fillStyle = '#ffffff';
-      squareCtx.fillRect(0, 0, sourceSize, sourceSize);
-      
-      // 居中绘制原图
+      // 居中绘制原图（保持透明背景）
       const offsetX = (sourceSize - canvas.width) / 2;
       const offsetY = (sourceSize - canvas.height) / 2;
       squareCtx.drawImage(canvas, offsetX, offsetY);
@@ -164,6 +160,17 @@ export function resizeImage(
         const finalCtx = finalCanvas.getContext('2d');
         if (finalCtx) {
           finalCtx.drawImage(correctCanvas, 0, 0);
+        }
+      }
+      
+      // 检查是否有透明像素
+      const ctx = finalCanvas.getContext('2d');
+      const imageData = ctx?.getImageData(0, 0, finalCanvas.width, finalCanvas.height);
+      let transparentPixels = 0;
+      if (imageData) {
+        const data = imageData.data;
+        for (let i = 3; i < data.length; i += 4) {
+          if (data[i] < 255) transparentPixels++;
         }
       }
       
