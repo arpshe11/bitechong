@@ -390,17 +390,6 @@ function App() {
             <p className="text-sm text-gray-500">
               © 2026 ICO图标制作工具. 专为Web开发者打造的图标转换工具
             </p>
-            <div className="mt-4 flex items-center justify-center space-x-4">
-              <button
-                onClick={() => setShowFeedback(true)}
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-105"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
-                提交反馈
-              </button>
-            </div>
             <div className="mt-4 flex items-center justify-center space-x-4 text-xs text-gray-400">
               <span>支持格式：JPG, PNG, GIF</span>
               <span>•</span>
