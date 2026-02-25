@@ -11,6 +11,7 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [qualityResult, setQualityResult] = useState<ImageQualityResult | null>(null);
+  const [optimizeMessage, setOptimizeMessage] = useState('');
 
   const handleAnalyze = async () => {
     if (!currentImage) return;
@@ -33,6 +34,7 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
   const handleOptimize = async () => {
     if (!currentImage || isOptimizing) return;
     setIsOptimizing(true);
+    setOptimizeMessage('');
     try {
       let blob = await upscaleImage(currentImage, 2);
       blob = await denoiseImage(new File([blob], 'upscaled.png', { type: 'image/png' }));
@@ -41,12 +43,18 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
       const optimizedFile = new File([blob], 'optimized.png', { type: 'image/png' });
       const url = URL.createObjectURL(blob);
       
+      setOptimizeMessage('优化完成！');
+      
       const event = new CustomEvent('imageOptimized', {
         detail: { file: optimizedFile, url }
       });
       window.dispatchEvent(event);
+      
+      setTimeout(() => setOptimizeMessage(''), 3000);
     } catch (error) {
       console.error('智能优化失败:', error);
+      setOptimizeMessage('优化失败');
+      setTimeout(() => setOptimizeMessage(''), 3000);
     } finally {
       setIsOptimizing(false);
     }
@@ -106,6 +114,12 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
       {qualityResult && (
         <div className="fixed bottom-4 right-4 bg-purple-900 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
           质量评分: <span className={`font-bold ${qualityResult.score >= 70 ? 'text-green-400' : qualityResult.score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>{qualityResult.score}分</span>
+        </div>
+      )}
+
+      {optimizeMessage && (
+        <div className="mt-2 text-center text-sm text-cyan-600 font-medium">
+          {optimizeMessage}
         </div>
       )}
     </div>
