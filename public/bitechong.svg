@@ -9,11 +9,11 @@
       <stop offset="100%" stop-color="#FFA800"/>
     </linearGradient>
   </defs>
-  <!-- 圆角正方形背景 -->
-  <rect x="16" y="16" width="224" height="224" rx="48" fill="url(#bgGrad)"/>
+  <!-- 圆形背景 -->
+  <circle cx="128" cy="128" r="112" fill="url(#bgGrad)"/>
   <!-- 字母B -->
-  <path fill="url(#starGrad)" d="M80 60h56c20 0 36 16 36 36s-16 36-36 36h-32v44h-24V60zm24 28h32c6.6 0 12 5.4 12 12s-5.4 12-12 12H104v-24zm0 48h36c6.6 0 12 5.4 12 12s-5.4 12-12 12H104v-24z"/>
-  <!-- 比特虫Logo图形 -->
-  <circle cx="180" cy="170" r="40" fill="url(#starGrad)"/>
-  <path fill="#fff" d="M165 155l10 10 20-20" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path fill="url(#starGrad)" d="M88 72h48c16 0 28 12 28 28s-12 28-28 28h-24v36h-24V72zm20 24h28c4 0 8 4 8 8s-4 8-8 8H108v-16zm0 36h32c4 0 8 4 8 8s-4 8-8 8H108v-16z"/>
+  <!-- 勾选标记 -->
+  <circle cx="170" cy="160" r="32" fill="url(#starGrad)"/>
+  <path fill="#fff" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" d="M158 160l8 8 16-16"/>
 </svg>
