@@ -11,7 +11,7 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [qualityResult, setQualityResult] = useState<ImageQualityResult | null>(null);
-  const [optimizeMessage, setOptimizeMessage] = useState('');
+  const [buttonText, setButtonText] = useState('智能优化');
 
   const handleAnalyze = async () => {
     if (!currentImage) return;
@@ -34,7 +34,7 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
   const handleOptimize = async () => {
     if (!currentImage || isOptimizing) return;
     setIsOptimizing(true);
-    setOptimizeMessage('');
+    setButtonText('优化中...');
     try {
       let blob = await upscaleImage(currentImage, 2);
       blob = await denoiseImage(new File([blob], 'upscaled.png', { type: 'image/png' }));
@@ -43,20 +43,26 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
       const optimizedFile = new File([blob], 'optimized.png', { type: 'image/png' });
       const url = URL.createObjectURL(blob);
       
-      setOptimizeMessage('优化完成！');
+      setButtonText('优化完成！');
       
       const event = new CustomEvent('imageOptimized', {
         detail: { file: optimizedFile, url }
       });
       window.dispatchEvent(event);
       
-      setTimeout(() => setOptimizeMessage(''), 3000);
+      setTimeout(() => {
+        setButtonText('智能优化');
+        setIsOptimizing(false);
+      }, 2000);
+      return;
     } catch (error) {
       console.error('智能优化失败:', error);
-      setOptimizeMessage('优化失败');
-      setTimeout(() => setOptimizeMessage(''), 3000);
+      setButtonText('优化失败');
+      setTimeout(() => setButtonText('智能优化'), 2000);
     } finally {
-      setIsOptimizing(false);
+      if (!buttonText.includes('完成') && !buttonText.includes('失败')) {
+        setIsOptimizing(false);
+      }
     }
   };
 
@@ -107,19 +113,13 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
               : 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600'
           }`}
         >
-          {isOptimizing ? '优化中...' : '智能优化'}
+          {buttonText}
         </button>
       </div>
 
       {qualityResult && (
         <div className="fixed bottom-4 right-4 bg-purple-900 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50">
           质量评分: <span className={`font-bold ${qualityResult.score >= 70 ? 'text-green-400' : qualityResult.score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>{qualityResult.score}分</span>
-        </div>
-      )}
-
-      {optimizeMessage && (
-        <div className="mt-2 text-center text-sm text-cyan-600 font-medium">
-          {optimizeMessage}
         </div>
       )}
     </div>
