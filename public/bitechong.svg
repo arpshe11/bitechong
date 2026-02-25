@@ -10,5 +10,17 @@
     </linearGradient>
   </defs>
   <circle cx="16" cy="16" r="14" fill="url(#g1)"/>
-  <polygon fill="url(#g2)" points="16,6 18,12 24,12 19,16 21,22 16,18 11,22 13,16 8,12 14,12"/>
+  <!-- 虫子身体 -->
+  <ellipse cx="14" cy="17" rx="5" ry="6" fill="url(#g2)"/>
+  <!-- 头部 -->
+  <circle cx="14" cy="10" r="3.5" fill="url(#g2)"/>
+  <!-- 眼睛 -->
+  <circle cx="12.5" cy="9.5" r="1" fill="#fff"/>
+  <circle cx="15.5" cy="9.5" r="1" fill="#fff"/>
+  <!-- 触角 -->
+  <path fill="none" stroke="url(#g2)" stroke-width="1" stroke-linecap="round" d="M12.5 7 Q11 4 9 5"/>
+  <path fill="none" stroke="url(#g2)" stroke-width="1" stroke-linecap="round" d="M15.5 7 Q17 4 19 5"/>
+  <!-- 腿 -->
+  <path fill="none" stroke="url(#g2)" stroke-width="1" stroke-linecap="round" d="M9 14 L7 12 M9 17 L7 17 M9 20 L7 22"/>
+  <path fill="none" stroke="url(#g2)" stroke-width="1" stroke-linecap="round" d="M19 14 L21 12 M19 17 L21 17 M19 20 L21 22"/>
 </svg>
