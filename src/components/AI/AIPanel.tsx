@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { analyzeImageQuality, type ImageQualityResult } from '../../utils/aiProcessor';
+import { analyzeImageQuality, type ImageQualityResult, upscaleImage, denoiseImage, sharpenImage } from '../../utils/aiProcessor';
 
 export interface AIPanelProps {
   currentImage: File | null;
@@ -9,6 +9,7 @@ export interface AIPanelProps {
 
 export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgroundToggle }: AIPanelProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isOptimizing, setIsOptimizing] = useState(false);
   const [qualityResult, setQualityResult] = useState<ImageQualityResult | null>(null);
 
   const handleAnalyze = async () => {
@@ -30,7 +31,25 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
   };
 
   const handleOptimize = async () => {
-    // 智能优化功能暂时禁用
+    if (!currentImage || isOptimizing) return;
+    setIsOptimizing(true);
+    try {
+      let blob = await upscaleImage(currentImage, 2);
+      blob = await denoiseImage(new File([blob], 'upscaled.png', { type: 'image/png' }));
+      blob = await sharpenImage(new File([blob], 'denoised.png', { type: 'image/png' }));
+      
+      const optimizedFile = new File([blob], 'optimized.png', { type: 'image/png' });
+      const url = URL.createObjectURL(blob);
+      
+      const event = new CustomEvent('imageOptimized', {
+        detail: { file: optimizedFile, url }
+      });
+      window.dispatchEvent(event);
+    } catch (error) {
+      console.error('智能优化失败:', error);
+    } finally {
+      setIsOptimizing(false);
+    }
   };
 
   return (
@@ -73,14 +92,14 @@ export function AIPanel({ currentImage, removeBackgroundEnabled, onRemoveBackgro
 
         <button
           onClick={handleOptimize}
-          disabled={!currentImage}
+          disabled={!currentImage || isOptimizing}
           className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1 ${
-            !currentImage
+            !currentImage || isOptimizing
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
               : 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600'
           }`}
         >
-          智能优化
+          {isOptimizing ? '优化中...' : '智能优化'}
         </button>
       </div>
 

@@ -192,6 +192,125 @@ function loadImage(file: File): Promise<HTMLImageElement> {
   });
 }
 
+export async function upscaleImage(file: File, scale: number = 2): Promise<Blob> {
+  const img = await loadImage(file);
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('无法获取Canvas上下文');
+  
+  canvas.width = img.width * scale;
+  canvas.height = img.height * scale;
+  
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('图片放大失败'));
+    }, 'image/png');
+  });
+}
+
+export async function denoiseImage(file: File): Promise<Blob> {
+  const img = await loadImage(file);
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('无法获取Canvas上下文');
+  
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
+  
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+  const width = canvas.width;
+  const height = canvas.height;
+  
+  const tempData = new Uint8ClampedArray(data);
+  const radius = 2;
+  
+  for (let y = radius; y < height - radius; y++) {
+    for (let x = radius; x < width - radius; x++) {
+      let r = 0, g = 0, b = 0, count = 0;
+      
+      for (let ky = -radius; ky <= radius; ky++) {
+        for (let kx = -radius; kx <= radius; kx++) {
+          const idx = ((y + ky) * width + (x + kx)) * 4;
+          r += tempData[idx];
+          g += tempData[idx + 1];
+          b += tempData[idx + 2];
+          count++;
+        }
+      }
+      
+      const idx = (y * width + x) * 4;
+      data[idx] = r / count;
+      data[idx + 1] = g / count;
+      data[idx + 2] = b / count;
+    }
+  }
+  
+  ctx.putImageData(imageData, 0, 0);
+  
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('去噪失败'));
+    }, 'image/png');
+  });
+}
+
+export async function sharpenImage(file: File): Promise<Blob> {
+  const img = await loadImage(file);
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('无法获取Canvas上下文');
+  
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
+  
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+  const width = canvas.width;
+  const height = canvas.height;
+  
+  const kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
+  const tempData = new Uint8ClampedArray(data);
+  
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      let r = 0, g = 0, b = 0;
+      
+      for (let ky = -1; ky <= 1; ky++) {
+        for (let kx = -1; kx <= 1; kx++) {
+          const idx = ((y + ky) * width + (x + kx)) * 4;
+          const kIdx = (ky + 1) * 3 + (kx + 1);
+          r += tempData[idx] * kernel[kIdx];
+          g += tempData[idx + 1] * kernel[kIdx];
+          b += tempData[idx + 2] * kernel[kIdx];
+        }
+      }
+      
+      const idx = (y * width + x) * 4;
+      data[idx] = Math.max(0, Math.min(255, r));
+      data[idx + 1] = Math.max(0, Math.min(255, g));
+      data[idx + 2] = Math.max(0, Math.min(255, b));
+    }
+  }
+  
+  ctx.putImageData(imageData, 0, 0);
+  
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error('锐化失败'));
+    }, 'image/png');
+  });
+}
+
 export function cleanupAIResources(): void {
   if (segmenter) {
     segmenter.dispose();

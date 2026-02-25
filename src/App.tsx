@@ -64,6 +64,25 @@ function App() {
     applyRemoveBackground();
   }, [removeBackgroundEnabled, originalImage, isConverting]);
 
+  // 监听智能优化完成
+  useEffect(() => {
+    const handleOptimized = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      const imageFile: ImageFile = {
+        file: detail.file,
+        name: detail.file.name,
+        size: detail.file.size,
+        type: detail.file.type,
+        url: detail.url
+      };
+      setCurrentImage(imageFile);
+      setOriginalImage(imageFile);
+    };
+    
+    window.addEventListener('imageOptimized', handleOptimized);
+    return () => window.removeEventListener('imageOptimized', handleOptimized);
+  }, []);
+
   const handleImageUpload = useCallback((file: File) => {
     const imageFile: ImageFile = {
       file,
