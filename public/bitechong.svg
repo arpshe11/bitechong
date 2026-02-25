@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="g1" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%">
       <stop offset="0%" stop-color="#41D1FF"/>
       <stop offset="100%" stop-color="#BD34FE"/>
     </linearGradient>
-    <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="g2" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%">
       <stop offset="0%" stop-color="#FFEA83"/>
+      <stop offset="8.333%" stop-color="#FFDD35"/>
       <stop offset="100%" stop-color="#FFA800"/>
     </linearGradient>
   </defs>
   <circle cx="16" cy="16" r="14" fill="url(#g1)"/>
-  <!-- 闪电图案 -->
-  <path fill="url(#g2)" d="M18 6l-6 8h4l-2 8 8-10h-5z"/>
+  <path fill="url(#g2)" d="M22.5 2.5L12 11.5a1 1 0 0 0-.5.9l2 11.5a1 1 0 0 0 1 .8l6-1.5a1 1 0 0 0 .8-1.1l-3-8.8a1 1 0 0 0-.6-.6l8-10.3c.5-.6-.2-1.4-.8-1.5Z"/>
 </svg>
